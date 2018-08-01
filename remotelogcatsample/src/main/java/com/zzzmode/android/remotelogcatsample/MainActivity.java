@@ -1,9 +1,10 @@
 package com.zzzmode.android.remotelogcatsample;
 
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.zzzmode.android.remotelogcat.LogcatRunner;
 
@@ -12,72 +13,56 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
-    
-    private boolean logRunning = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
-            LogcatRunner.getInstance()
-                    .config(LogcatRunner.LogConfig.builder()
-                            .setWsCanReceiveMsg(false)
-                            .write2File(true))
-                    .with(getApplicationContext())
-                    .start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        findViewById(R.id.logOn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    LogcatRunner.getInstance()
+                            .config(LogcatRunner.LogConfig.builder()
+                                    .setWsCanReceiveMsg(false)
+                                    .write2File(true)
+                                    .setLogFileDir(Environment.getExternalStorageDirectory() + "/lpsdklog"))
+                            .with(getApplicationContext())
+                            .start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                test();
+            }
+        });
+
+        findViewById(R.id.logOff).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogcatRunner.getInstance().stop();
+            }
+        });
+
+        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                test();
+            }
+        });
     }
 
-    private void startLog() {
-        if (logRunning) {
-            return;
-        }
-        logRunning = true;
+    private void test() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Random random = new Random();
-                int i = 0;
-                while (logRunning) {
-                    if (random.nextBoolean()) {
-                        Log.e("testlog", "run --> " + i);
-                    } else {
-                        Log.w("testlog", "run --> " + i);
-
-                    }
-//                    test();test();test();test();test();test();test();
-//                    test();test();test();test();test();test();test();
-                    SystemClock.sleep(random.nextInt(5000) + 100);
-                    i++;
-                }
+                int i = random.nextInt(5000);
+                Log.e("testlog", "run --> test e " + i);
+                Log.w("testlog", "run --> test w " + i);
+                Log.i("testlog", "run --> test i " + i);
+                Log.d("testlog", "run --> test d " + i);
             }
         }).start();
-
-    }
-
-    private static void test(){
-        try {
-            throw new RuntimeException("----");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        startLog();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        logRunning = false;
     }
 
 
@@ -85,6 +70,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         LogcatRunner.getInstance().stop();
-
     }
 }

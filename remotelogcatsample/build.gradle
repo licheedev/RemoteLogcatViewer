@@ -5,9 +5,10 @@ android {
     buildToolsVersion "27.0.3"
 
     defaultConfig {
-        applicationId "com.zzzmode.android.remotelogcatsample"
+//        applicationId "com.zzzmode.android.remotelogcatsample"
+        applicationId "com.car.robot.logger"
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
@@ -22,6 +23,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:appcompat-v7:23.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation project(':remotelogcat')
 }
