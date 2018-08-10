@@ -1,17 +1,21 @@
 package com.zzzmode.android.remotelogcatsample;
 
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import android.widget.TextView;
 import com.zzzmode.android.remotelogcat.LogcatRunner;
 
 import java.io.IOException;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+
+    TextView textIP;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,14 @@ public class MainActivity extends AppCompatActivity {
                 test();
             }
         });
+
+        textIP = findViewById(R.id.textIP);
+
+
+        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        int ipAddressInt = wm.getConnectionInfo().getIpAddress();
+        String ipAddress = String.format("%d.%d.%d.%d", (ipAddressInt & 0xff), (ipAddressInt >> 8 & 0xff), (ipAddressInt >> 16 & 0xff), (ipAddressInt >> 24 & 0xff));
+        textIP.setText(ipAddress);
     }
 
     private void test() {
