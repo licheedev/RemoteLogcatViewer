@@ -18,8 +18,8 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView textIP;
-    WifiReceiver wifiReceiver;
+    private TextView textIP;
+    private WifiReceiver wifiReceiver;
 
     private int wsPort = 11229;
     private String wsPrefix = "/logcat";
@@ -30,11 +30,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            textIP.setText("service disconnected");
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             binder = IMyAidlInterface.Stub.asInterface(service);
+            startLog();
         }
     };
 
@@ -90,6 +92,15 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         registerReceiver(wifiReceiver, filter);
+
+    }
+
+    private void startLog() {
+        try {
+            binder.start(wsPort, wsPrefix);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private void test() {

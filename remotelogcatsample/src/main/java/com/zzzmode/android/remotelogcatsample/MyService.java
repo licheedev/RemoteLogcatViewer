@@ -46,7 +46,7 @@ public class MyService extends Service {
                     .setWsCanReceiveMsg(false)
                     .write2File(true)
                     .setLogFileDir(Environment.getExternalStorageDirectory() + "/lpsdklog"))
-                .with(getApplicationContext())
+                .with(getApplicationContext(), false)
                 .start();
         } catch (IOException e) {
             e.printStackTrace();
