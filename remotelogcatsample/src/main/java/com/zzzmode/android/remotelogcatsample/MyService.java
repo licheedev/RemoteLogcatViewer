@@ -3,7 +3,10 @@ package com.zzzmode.android.remotelogcatsample;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Environment;
@@ -23,19 +26,8 @@ public class MyService extends Service {
 
         @Override
         public void start(int wsPort, String wsPrefix) throws RemoteException {
-            try {
-                LogcatRunner.getInstance()
-                    .config(LogConfig.builder()
-                        .port(wsPort)
-                        .setWebsocketPrefix(wsPrefix)
-                        .setWsCanReceiveMsg(false)
-                        .write2File(true)
-                        .setLogFileDir(Environment.getExternalStorageDirectory() + "/lpsdklog"))
-                    .with(getApplicationContext())
-                    .start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            saveWs(wsPort, wsPrefix);
+            doStart(wsPort, wsPrefix);
         }
 
         @Override
@@ -44,6 +36,22 @@ public class MyService extends Service {
         }
     };
 
+
+    private void doStart(int wsPort, String wsPrefix) {
+        try {
+            LogcatRunner.getInstance()
+                .config(LogConfig.builder()
+                    .port(wsPort)
+                    .setWebsocketPrefix(wsPrefix)
+                    .setWsCanReceiveMsg(false)
+                    .write2File(true)
+                    .setLogFileDir(Environment.getExternalStorageDirectory() + "/lpsdklog"))
+                .with(getApplicationContext())
+                .start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onCreate() {
@@ -74,5 +82,31 @@ public class MyService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        doStart(getSavedWsPort(), getSavedWsPrefix());
+        return START_STICKY;
+    }
+
+
+    private void saveWs(int wsPort, String wsPrefix) {
+        SharedPreferences sp = getSharedPreferences("wx_store",
+            Context.MODE_PRIVATE);
+        Editor editor = sp.edit().putInt("wsPort", wsPort).putString("wsPrefix", wsPrefix);
+        editor.apply();
+    }
+
+    private int getSavedWsPort() {
+        SharedPreferences sp = getSharedPreferences("wx_store",
+            Context.MODE_PRIVATE);
+        return sp.getInt("wsPort", 11229);
+    }
+
+    private String getSavedWsPrefix() {
+        SharedPreferences sp = getSharedPreferences("wx_store",
+            Context.MODE_PRIVATE);
+        return sp.getString("wsPrefix", "/logcat");
     }
 }

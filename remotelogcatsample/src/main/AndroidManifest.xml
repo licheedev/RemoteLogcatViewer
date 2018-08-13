@@ -23,7 +23,8 @@
     <service
       android:enabled="true"
       android:exported="true"
-      android:name=".MyService"></service>
+      android:name=".MyService"
+      android:process=":MyService"></service>
   </application>
 
 </manifest>
