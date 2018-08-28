@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             binder.start(wsPort, wsPrefix);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            Log.e("testlog", e.getMessage(), e);
         }
     }
 
