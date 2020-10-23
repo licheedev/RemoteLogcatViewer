@@ -20,7 +20,26 @@ allprojects {
 
 ```java
 //start
-LogcatRunner.getInstance().config(LogcatRunner.LogConfig.builder().write2File(true)).start();
+
+//LogcatRunner.getInstance().config(LogcatRunner.LogConfig.builder().write2File(true)).start();
+
+try {
+    LogcatRunner.getInstance()
+        .config(
+            LogConfig.builder()
+                .port(11229)
+                .setWebsocketPrefix("/logcat")
+                .setWsCanReceiveMsg(false)
+                .write2File(true)
+                .setLogFileDir(
+                    getExternalFilesDir("logcat")!!.absolutePath
+                )
+        )
+        .with(applicationContext, false)
+        .start()
+} catch (e: IOException) {
+    Log.e("LogcatRunner", e.message, e)
+}
 ...
 //stop
 LogcatRunner.getInstance().stop();
