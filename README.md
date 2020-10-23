@@ -3,7 +3,19 @@
 
 ## 用法
 ```gradle
-compile project(':remotelogcat')
+//compile project(':remotelogcat')
+
+allprojects {
+  repositories {
+    ...
+    maven { url 'https://dl.bintray.com/licheedev/maven' }
+  }
+}
+
+  dependencies {
+        implementation 'com.licheedev:remotelogcatviewer:1.0.0'
+}
+
 ```
 
 ```java
