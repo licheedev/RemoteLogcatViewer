@@ -8,7 +8,7 @@
 allprojects {
   repositories {
     ...
-    maven { url 'https://dl.bintray.com/licheedev/maven' }
+    mavenCentral()
   }
 }
 
